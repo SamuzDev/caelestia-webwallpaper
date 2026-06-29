@@ -88,6 +88,10 @@ error() {
     exit 1
 }
 
+debug() {
+    echo -e "${BLUE}[DEBUG]${NC} $1"
+}
+
 confirm() {
     local prompt="$1"
     local default="${2:-n}"
