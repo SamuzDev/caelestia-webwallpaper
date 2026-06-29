@@ -192,8 +192,13 @@ uninstall_modules() {
         run_cp "$MODULES_DIR/PageCompRegistry.qml.bak" "$MODULES_DIR/PageCompRegistry.qml"
         run_rm "$MODULES_DIR/PageCompRegistry.qml.bak"
         success "PageCompRegistry.qml restaurado desde backup"
-    elif [ -f "$MODULES_DIR/PageCompRegistry.qml" ]; then
-        if grep -q "OnlineWallpapers" "$MODULES_DIR/PageCompRegistry.qml" 2>/dev/null; then
+    else
+        # Usar .orig del repo como fallback
+        local orig_file="$SCRIPT_DIR/modules/nexus/PageCompRegistry.qml.orig"
+        if [ -f "$orig_file" ]; then
+            run_cp "$orig_file" "$MODULES_DIR/PageCompRegistry.qml"
+            success "PageCompRegistry.qml restaurado desde original del repo"
+        elif [ -f "$MODULES_DIR/PageCompRegistry.qml" ]; then
             warn "No hay backup de PageCompRegistry.qml"
             warn "Reinstala Caelestia para restaurar: yay -S caelestia"
         fi
