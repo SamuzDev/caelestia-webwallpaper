@@ -48,7 +48,11 @@ cd caelestia-webwallpaper
 ./install.sh --force
 
 # Especificar directorio de Caelestia
+# Bash/zsh:
 CAELESTIA_DIR=~/.config/quickshell/caelestia ./install.sh
+
+# Fish:
+env CAELESTIA_DIR=~/.config/quickshell/caelestia ./install.sh
 ```
 
 ### Dependencias
