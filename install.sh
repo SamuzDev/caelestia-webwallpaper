@@ -210,16 +210,16 @@ merge_registry() {
     local src="$1"
     local dst="$2"
 
+    # Guardar backup si no existe (aunque ya tenga OnlineWallpapers)
+    if [ ! -f "${dst}.bak" ]; then
+        run_cp "$dst" "${dst}.bak"
+        debug "Backup guardado: ${dst}.bak"
+    fi
+
     # Check if OnlineWallpapers component is already registered
     if grep -q "OnlineWallpapers" "$dst" 2>/dev/null; then
         debug "PageCompRegistry ya tiene OnlineWallpapers"
         return 0
-    fi
-
-    # Guardar backup del original antes de modificar
-    if [ ! -f "${dst}.bak" ]; then
-        run_cp "$dst" "${dst}.bak"
-        debug "Backup guardado: ${dst}.bak"
     fi
 
     # Simple approach: copy the fixed version from source
