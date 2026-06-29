@@ -71,6 +71,14 @@ run_rm_rf() {
     fi
 }
 
+run_cp() {
+    if [ "$USE_SUDO" = "1" ]; then
+        sudo cp "$@"
+    else
+        cp "$@"
+    fi
+}
+
 info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
