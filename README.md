@@ -2,6 +2,8 @@
 
 Módulo de wallpapers online para [Caelestia Shell](https://github.com/user/caelestia-shell). Descarga wallpapers directamente desde **Wallhaven.cc** y **UHDPaper.com** sin salir de tu desktop.
 
+![Preview](assets/preview.png)
+
 ## Características
 
 - **Wallhaven.cc** - API completa con búsqueda, filtros, categorías, y paginación
