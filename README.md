@@ -9,6 +9,26 @@ Módulo de wallpapers online para [Caelestia Shell](https://github.com/user/cael
 - **Interfaz QML** - Integración completa con el Nexus de Caelestia
 - **Scripts CLI** - Uso desde terminal para scripting y automatización
 
+## Antes de instalar
+
+Se recomienda hacer un backup de tu configuración de Caelestia antes de instalar:
+
+```bash
+# Backup completo del shell
+cp -r ~/.config/quickshell/caelestia ~/.config/quickshell/caelestia.bak
+
+# Obackup solo los archivos que este script modifica
+mkdir -p ~/.config/quickshell/caelestia-backup
+cp ~/.config/quickshell/caelestia/services/*.qml ~/.config/quickshell/caelestia-backup/ 2>/dev/null
+cp ~/.config/quickshell/caelestia/modules/nexus/PageCompRegistry.qml ~/.config/quickshell/caelestia-backup/ 2>/dev/null
+cp ~/.config/quickshell/caelestia/modules/nexus/pages/wallandstyle/*.qml ~/.config/quickshell/caelestia-backup/ 2>/dev/null
+```
+
+Para restaurar el backup:
+```bash
+cp -r ~/.config/quickshell/caelestia.bak/* ~/.config/quickshell/caelestia/
+```
+
 ## Instalación
 
 ### Rápida
