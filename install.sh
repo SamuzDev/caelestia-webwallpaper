@@ -185,7 +185,7 @@ install_modules() {
 setup_config() {
     info "Configurando wallhaven..."
     
-    CONFIG_DIR="$HOME/.config/niri_caelestia/wallhaven"
+    CONFIG_DIR="$HOME/.config/caelestia/wallhaven"
     mkdir -p "$CONFIG_DIR"
     
     if [ ! -f "$CONFIG_DIR/config.toml" ]; then

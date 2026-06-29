@@ -55,7 +55,7 @@ DEFAULTS: dict = {
 
 _CONFIG_PATH = Path(
     os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))
-) / "niri_caelestia" / "wallhaven"
+) / "caelestia" / "wallhaven"
 
 
 class Config:
