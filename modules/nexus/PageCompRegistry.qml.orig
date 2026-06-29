@@ -35,9 +35,6 @@ QtObject {
                 Component {
                     ColourSelect {}
                 }
-                Component {
-                    OnlineWallpapers {}
-                }
             }
         },
 
@@ -118,10 +115,7 @@ QtObject {
                     BarStatusIcons {}
                 }
                 Component {
-                    ColourSelect {}
-                }
-                Component {
-                    OnlineWallpapers {}
+                    BarClock {}
                 }
             }
         },
