@@ -37,6 +37,10 @@ error() {
     exit 1
 }
 
+debug() {
+    echo -e "${BLUE}[DEBUG]${NC} $1"
+}
+
 check_deps() {
     info "Verificando dependencias..."
     
@@ -63,22 +67,24 @@ check_deps() {
 install_python_deps() {
     info "Instalando dependencias de Python..."
     
-    # Wallhaven dependencies
-    if command -v pip3 &> /dev/null; then
-        pip3 install requests --quiet 2>/dev/null || warn "No se pudo instalar requests via pip"
-    elif python3 -m pip &> /dev/null; then
-        python3 -m pip install requests --quiet 2>/dev/null || warn "No se pudo instalar requests via pip"
-    else
-        warn "pip no disponible. Asegúrate de tener 'requests' instalado."
-    fi
+    local pkgs=("python-requests" "python-beautifulsoup4" "python-lxml")
+    local pip_pkgs=("requests" "beautifulsoup4" "lxml")
     
-    # UHDPaper dependencies
-    if [ -f "$SCRIPT_DIR/scripts/uhdpaper/requirements.txt" ]; then
-        if command -v pip3 &> /dev/null; then
-            pip3 install -r "$SCRIPT_DIR/scripts/uhdpaper/requirements.txt" --quiet 2>/dev/null || warn "Error instalando dependencias de UHDPaper"
-        elif python3 -m pip &> /dev/null; then
-            python3 -m pip install -r "$SCRIPT_DIR/scripts/uhdpaper/requirements.txt" --quiet 2>/dev/null || warn "Error instalando dependencias de UHDPaper"
-        fi
+    # Detectar package manager del sistema
+    if command -v pacman &> /dev/null; then
+        info "Usando pacman para instalar dependencias..."
+        sudo pacman -S --needed --noconfirm "${pkgs[@]}" 2>/dev/null || warn "No se pudo instalar via pacman"
+    elif command -v dnf &> /dev/null; then
+        info "Usando dnf para instalar dependencias..."
+        sudo dnf install -y python3-requests python3-beautifulsoup4 python3-lxml 2>/dev/null || warn "No se pudo instalar via dnf"
+    elif command -v apt &> /dev/null; then
+        info "Usando apt para instalar dependencias..."
+        sudo apt install -y python3-requests python3-bs4 python3-lxml 2>/dev/null || warn "No se pudo instalar via apt"
+    elif command -v pip3 &> /dev/null; then
+        info "Usando pip3 para instalar dependencias..."
+        pip3 install --user "${pip_pkgs[@]}" 2>/dev/null || pip3 install "${pip_pkgs[@]}" 2>/dev/null || warn "No se pudo instalar via pip3"
+    else
+        warn "No se detectó package manager. Instala manualmente: ${pip_pkgs[*]}"
     fi
     
     success "Dependencias de Python instaladas"
