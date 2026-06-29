@@ -179,6 +179,55 @@ uninstall_services() {
 uninstall_modules() {
     info "Eliminando módulos QML..."
     
+    # Limpiar referencias a OnlineWallpapers en PageCompRegistry.qml
+    if [ -f "$MODULES_DIR/PageCompRegistry.qml" ]; then
+        if grep -q "OnlineWallpapers" "$MODULES_DIR/PageCompRegistry.qml" 2>/dev/null; then
+            info "Limpiando referencias en PageCompRegistry.qml..."
+            # Eliminar componentes OnlineWallpapers (bloques de 3 líneas)
+            run_cmd sed -i '/Component {/,/[[:space:]]*}/{
+                /OnlineWallpapers/{
+                    N
+                    N
+                    /OnlineWallpapers.*\n.*\n.*}/d
+                }
+            }' "$MODULES_DIR/PageCompRegistry.qml"
+            # También limpiar líneas sueltas
+            run_cmd sed -i '/^[[:space:]]*Component {$/{
+                N
+                /OnlineWallpapers/{
+                    N
+                    N
+                    d
+                }
+            }' "$MODULES_DIR/PageCompRegistry.qml"
+            success "PageCompRegistry.qml limpiado"
+        fi
+    fi
+    
+    # Limpiar botón "Online" en WallpaperAndStyle.qml
+    if [ -f "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml" ]; then
+        if grep -q "Online" "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml" 2>/dev/null; then
+            if grep -q "openSubPage(4)" "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml" 2>/dev/null; then
+                info "Limpiando botón Online en WallpaperAndStyle.qml..."
+                # Eliminar el botón Online (IconTextButton con openSubPage(4))
+                run_cmd sed -i '/IconTextButton {/,/openSubPage(4)/{
+                    /openSubPage(4)/{
+                        N
+                        N
+                        N
+                        N
+                        N
+                        N
+                        N
+                        N
+                        d
+                    }
+                }' "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml"
+                success "WallpaperAndStyle.qml limpiado"
+            fi
+        fi
+    fi
+    
     # Eliminar archivos nuevos
     local new_files=(
         "$MODULES_DIR/pages/wallandstyle/OnlineWallpapers.qml"
@@ -189,20 +238,6 @@ uninstall_modules() {
         if [ -f "$file" ]; then
             run_rm "$file"
             success "$(basename "$file") eliminado"
-        fi
-    done
-    
-    # Archivos modificados - advertir al usuario
-    local modified_files=(
-        "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml"
-        "$MODULES_DIR/PageCompRegistry.qml"
-    )
-    
-    for file in "${modified_files[@]}"; do
-        if [ -f "$file" ]; then
-            warn "$(basename "$file") fue modificado por Web Wallpaper"
-            warn "Para restaurar la versión original, reinstala Caelestia"
-            warn "  yay -S caelestia  (o el comando que uses)"
         fi
     done
 }
@@ -233,10 +268,7 @@ print_summary() {
     echo "  - Scripts: $SCRIPTS_DIR/"
     echo "  - Servicios: WallhavenService.qml, UhdService.qml"
     echo "  - Módulos: OnlineWallpapers.qml, WallItemOnline.qml"
-    echo ""
-    echo "Archivos modificados (conservados):"
-    echo "  - WallpaperAndStyle.qml (reinstala Caelestia para restaurar)"
-    echo "  - PageCompRegistry.qml (reinstala Caelestia para restaurar)"
+    echo "  - Referencias limpiadas en PageCompRegistry.qml y WallpaperAndStyle.qml"
     echo ""
     echo "Reinicia Caelestia para aplicar los cambios."
     echo ""
