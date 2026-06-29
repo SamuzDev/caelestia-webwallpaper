@@ -148,15 +148,10 @@ merge_registry() {
         return 0
     fi
     
-    # Add OnlineWallpapers component after ColourSelect if missing
-    if grep -q "ColourSelect" "$dst" 2>/dev/null; then
-        awk '/ColourSelect \{/{found=1} found && /\}/{print; print "                Component {"; print "                    OnlineWallpapers {}"; print "                }"; found=0; next}1' "$dst" > "${dst}.tmp" && mv "${dst}.tmp" "$dst"
-        success "OnlineWallpapers agregado al registry"
-        return 0
-    fi
-    
-    warn "No se pudo mergear PageCompRegistry automáticamente"
-    return 1
+    # Simple approach: copy the fixed version from source
+    cp "$src" "$dst"
+    success "PageCompRegistry.qml actualizado con OnlineWallpapers"
+    return 0
 }
 
 install_modules() {
