@@ -81,11 +81,6 @@ run_chmod() {
     fi
 }
 
-# Variables de rutas
-SCRIPTS_DIR="$CAELESTIA_DIR/scripts/webWallpaper"
-SERVICES_DIR="$CAELESTIA_DIR/services"
-MODULES_DIR="$CAELESTIA_DIR/modules/nexus"
-
 info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
@@ -354,6 +349,11 @@ done
 
 # Detectar ubicación de Caelestia
 detect_caelestia
+
+# Asignar variables de rutas después de detectar
+SCRIPTS_DIR="$CAELESTIA_DIR/scripts/webWallpaper"
+SERVICES_DIR="$CAELESTIA_DIR/services"
+MODULES_DIR="$CAELESTIA_DIR/modules/nexus"
 
 # Main
 echo ""
