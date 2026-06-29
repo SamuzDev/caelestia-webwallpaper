@@ -179,53 +179,23 @@ uninstall_services() {
 uninstall_modules() {
     info "Eliminando módulos QML..."
     
-    # Limpiar referencias a OnlineWallpapers en PageCompRegistry.qml
-    if [ -f "$MODULES_DIR/PageCompRegistry.qml" ]; then
+    # Restaurar PageCompRegistry.qml desde backup
+    if [ -f "$MODULES_DIR/PageCompRegistry.qml.bak" ]; then
+        run_cp "$MODULES_DIR/PageCompRegistry.qml.bak" "$MODULES_DIR/PageCompRegistry.qml"
+        run_rm "$MODULES_DIR/PageCompRegistry.qml.bak"
+        success "PageCompRegistry.qml restaurado desde backup"
+    elif [ -f "$MODULES_DIR/PageCompRegistry.qml" ]; then
         if grep -q "OnlineWallpapers" "$MODULES_DIR/PageCompRegistry.qml" 2>/dev/null; then
-            info "Limpiando referencias en PageCompRegistry.qml..."
-            # Eliminar componentes OnlineWallpapers (bloques de 3 líneas)
-            run_cmd sed -i '/Component {/,/[[:space:]]*}/{
-                /OnlineWallpapers/{
-                    N
-                    N
-                    /OnlineWallpapers.*\n.*\n.*}/d
-                }
-            }' "$MODULES_DIR/PageCompRegistry.qml"
-            # También limpiar líneas sueltas
-            run_cmd sed -i '/^[[:space:]]*Component {$/{
-                N
-                /OnlineWallpapers/{
-                    N
-                    N
-                    d
-                }
-            }' "$MODULES_DIR/PageCompRegistry.qml"
-            success "PageCompRegistry.qml limpiado"
+            warn "No hay backup de PageCompRegistry.qml"
+            warn "Reinstala Caelestia para restaurar: yay -S caelestia"
         fi
     fi
     
-    # Limpiar botón "Online" en WallpaperAndStyle.qml
-    if [ -f "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml" ]; then
-        if grep -q "Online" "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml" 2>/dev/null; then
-            if grep -q "openSubPage(4)" "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml" 2>/dev/null; then
-                info "Limpiando botón Online en WallpaperAndStyle.qml..."
-                # Eliminar el botón Online (IconTextButton con openSubPage(4))
-                run_cmd sed -i '/IconTextButton {/,/openSubPage(4)/{
-                    /openSubPage(4)/{
-                        N
-                        N
-                        N
-                        N
-                        N
-                        N
-                        N
-                        N
-                        d
-                    }
-                }' "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml"
-                success "WallpaperAndStyle.qml limpiado"
-            fi
-        fi
+    # Restaurar WallpaperAndStyle.qml desde backup
+    if [ -f "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml.bak" ]; then
+        run_cp "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml.bak" "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml"
+        run_rm "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml.bak"
+        success "WallpaperAndStyle.qml restaurado desde backup"
     fi
     
     # Eliminar archivos nuevos

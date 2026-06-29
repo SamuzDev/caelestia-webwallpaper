@@ -216,6 +216,12 @@ merge_registry() {
         return 0
     fi
 
+    # Guardar backup del original antes de modificar
+    if [ ! -f "${dst}.bak" ]; then
+        run_cp "$dst" "${dst}.bak"
+        debug "Backup guardado: ${dst}.bak"
+    fi
+
     # Simple approach: copy the fixed version from source
     run_cp "$src" "$dst"
     success "PageCompRegistry.qml actualizado con OnlineWallpapers"
@@ -244,6 +250,11 @@ install_modules() {
     # WallpaperAndStyle.qml - siempre actualizar (tiene fixes importantes)
     if [ -f "$SCRIPT_DIR/modules/nexus/pages/wallandstyle/WallpaperAndStyle.qml" ]; then
         if [ -f "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml" ]; then
+            # Guardar backup del original antes de modificar
+            if [ ! -f "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml.bak" ]; then
+                run_cp "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml" "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml.bak"
+                debug "Backup guardado: WallpaperAndStyle.qml.bak"
+            fi
             # Comparar y actualizar si hay cambios
             if ! diff -q "$SCRIPT_DIR/modules/nexus/pages/wallandstyle/WallpaperAndStyle.qml" "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml" >/dev/null 2>&1; then
                 run_cp "$SCRIPT_DIR/modules/nexus/pages/wallandstyle/WallpaperAndStyle.qml" "$MODULES_DIR/pages/wallandstyle/"
