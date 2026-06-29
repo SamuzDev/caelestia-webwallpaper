@@ -210,10 +210,17 @@ merge_registry() {
     local src="$1"
     local dst="$2"
 
-    # Guardar backup si no existe (aunque ya tenga OnlineWallpapers)
+    # Guardar backup del original si no existe
     if [ ! -f "${dst}.bak" ]; then
-        run_cp "$dst" "${dst}.bak"
-        debug "Backup guardado: ${dst}.bak"
+        # Intentar obtener el original del sistema
+        local system_original="/etc/xdg/quickshell/caelestia/modules/nexus/PageCompRegistry.qml"
+        if [ -f "$system_original" ] && ! grep -q "OnlineWallpapers" "$system_original" 2>/dev/null; then
+            run_cp "$system_original" "${dst}.bak"
+            debug "Backup del sistema guardado: ${dst}.bak"
+        else
+            run_cp "$dst" "${dst}.bak"
+            debug "Backup guardado: ${dst}.bak"
+        fi
     fi
 
     # Check if OnlineWallpapers component is already registered
