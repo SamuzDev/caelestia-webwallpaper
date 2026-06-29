@@ -132,6 +132,27 @@ install_services() {
     done
 }
 
+merge_registry() {
+    local src="$1"
+    local dst="$2"
+    
+    # Check if OnlineWallpapers component is already registered
+    if grep -q "OnlineWallpapers" "$dst" 2>/dev/null; then
+        debug "PageCompRegistry ya tiene OnlineWallpapers"
+        return 0
+    fi
+    
+    # Add OnlineWallpapers component after ColourSelect if missing
+    if grep -q "ColourSelect" "$dst" 2>/dev/null; then
+        awk '/ColourSelect \{/{found=1} found && /\}/{print; print "                Component {"; print "                    OnlineWallpapers {}"; print "                }"; found=0; next}1' "$dst" > "${dst}.tmp" && mv "${dst}.tmp" "$dst"
+        success "OnlineWallpapers agregado al registry"
+        return 0
+    fi
+    
+    warn "No se pudo mergear PageCompRegistry automáticamente"
+    return 1
+}
+
 install_modules() {
     info "Instalando módulos QML..."
     
@@ -139,26 +160,27 @@ install_modules() {
     mkdir -p "$MODULES_DIR/pages/wallandstyle"
     mkdir -p "$MODULES_DIR/common"
     
-    # Copiar OnlineWallpapers.qml
+    # Copiar OnlineWallpapers.qml (siempre, es nuevo)
     if [ -f "$SCRIPT_DIR/modules/nexus/pages/wallandstyle/OnlineWallpapers.qml" ]; then
         cp "$SCRIPT_DIR/modules/nexus/pages/wallandstyle/OnlineWallpapers.qml" "$MODULES_DIR/pages/wallandstyle/"
         success "OnlineWallpapers.qml instalado"
     fi
     
-    # Copiar WallItemOnline.qml
+    # Copiar WallItemOnline.qml (siempre, es nuevo)
     if [ -f "$SCRIPT_DIR/modules/nexus/common/WallItemOnline.qml" ]; then
         cp "$SCRIPT_DIR/modules/nexus/common/WallItemOnline.qml" "$MODULES_DIR/common/"
         success "WallItemOnline.qml instalado"
     fi
     
-    # Copiar WallpaperAndStyle.qml (solo si no existe o se fuerza)
+    # WallpaperAndStyle.qml - siempre actualizar (tiene fixes importantes)
     if [ -f "$SCRIPT_DIR/modules/nexus/pages/wallandstyle/WallpaperAndStyle.qml" ]; then
         if [ -f "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml" ]; then
-            if [ "${FORCE:-}" = "1" ]; then
+            # Comparar y actualizar si hay cambios
+            if ! diff -q "$SCRIPT_DIR/modules/nexus/pages/wallandstyle/WallpaperAndStyle.qml" "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml" >/dev/null 2>&1; then
                 cp "$SCRIPT_DIR/modules/nexus/pages/wallandstyle/WallpaperAndStyle.qml" "$MODULES_DIR/pages/wallandstyle/"
-                success "WallpaperAndStyle.qml actualizado"
+                success "WallpaperAndStyle.qml actualizado (con fixes)"
             else
-                warn "WallpaperAndStyle.qml no sobrescrito (usa FORCE=1 para forzar)"
+                debug "WallpaperAndStyle.qml ya está actualizado"
             fi
         else
             cp "$SCRIPT_DIR/modules/nexus/pages/wallandstyle/WallpaperAndStyle.qml" "$MODULES_DIR/pages/wallandstyle/"
@@ -166,15 +188,11 @@ install_modules() {
         fi
     fi
     
-    # Copiar PageCompRegistry.qml (solo si no existe o se fuerza)
+    # PageCompRegistry.qml - mergear OnlineWallpapers si falta
     if [ -f "$SCRIPT_DIR/modules/nexus/PageCompRegistry.qml" ]; then
         if [ -f "$MODULES_DIR/PageCompRegistry.qml" ]; then
-            if [ "${FORCE:-}" = "1" ]; then
-                cp "$SCRIPT_DIR/modules/nexus/PageCompRegistry.qml" "$MODULES_DIR/"
-                success "PageCompRegistry.qml actualizado"
-            else
-                warn "PageCompRegistry.qml no sobrescrito (usa FORCE=1 para forzar)"
-            fi
+            # Intentar mergear el componente OnlineWallpapers
+            merge_registry "$SCRIPT_DIR/modules/nexus/PageCompRegistry.qml" "$MODULES_DIR/PageCompRegistry.qml"
         else
             cp "$SCRIPT_DIR/modules/nexus/PageCompRegistry.qml" "$MODULES_DIR/"
             success "PageCompRegistry.qml instalado"

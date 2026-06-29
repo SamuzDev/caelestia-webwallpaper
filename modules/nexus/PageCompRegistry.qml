@@ -118,7 +118,10 @@ QtObject {
                     BarStatusIcons {}
                 }
                 Component {
-                    BarClock {}
+                    ColourSelect {}
+                }
+                Component {
+                    OnlineWallpapers {}
                 }
             }
         },

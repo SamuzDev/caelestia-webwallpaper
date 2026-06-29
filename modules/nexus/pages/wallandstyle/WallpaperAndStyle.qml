@@ -16,9 +16,9 @@ PageBase {
     title: qsTr("Wallpaper & style")
 
     ColumnLayout {
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        width: root.cappedWidth
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+        Layout.fillWidth: true
+        Layout.maximumWidth: root.cappedWidth
         spacing: Tokens.spacing.large
 
         StyledClippingRect {
