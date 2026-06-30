@@ -209,6 +209,16 @@ uninstall_modules() {
         run_cp "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml.bak" "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml"
         run_rm "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml.bak"
         success "WallpaperAndStyle.qml restaurado desde backup"
+    else
+        # Usar .orig del repo como fallback
+        local orig_file="$SCRIPT_DIR/modules/nexus/pages/wallandstyle/WallpaperAndStyle.qml.orig"
+        if [ -f "$orig_file" ]; then
+            run_cp "$orig_file" "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml"
+            success "WallpaperAndStyle.qml restaurado desde original del repo"
+        elif [ -f "$MODULES_DIR/pages/wallandstyle/WallpaperAndStyle.qml" ]; then
+            warn "No hay backup de WallpaperAndStyle.qml"
+            warn "Reinstala Caelestia para restaurar: yay -S caelestia"
+        fi
     fi
     
     # Eliminar archivos nuevos

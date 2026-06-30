@@ -69,6 +69,7 @@ QtObject {
 
     function downloadAndSet(slug) {
         Quickshell.execDetached(["mkdir", "-p", Paths.wallsdir]);
+        downloadSetProc._pendingSlug = slug;
         downloadSetProc.command = ["sh", "-c", `cd "${scriptDir}" && python3 main.py --slug "${slug}" --output "${Paths.wallsdir}" --res 4k --json`];
         downloadSetProc.running = true;
     }
@@ -144,8 +145,17 @@ QtObject {
     }
 
     readonly property Process downloadSetProc: Process {
+        property string _pendingSlug: ""
+
         stdout: SplitParser {
-            onRead: {}
+            onRead: function(line) {
+                try {
+                    const data = JSON.parse(line);
+                    if (data.status === "success" && data.path) {
+                        Quickshell.execDetached(["caelestia", "wallpaper", "-f", data.path]);
+                    }
+                } catch (e) {}
+            }
         }
     }
 }
